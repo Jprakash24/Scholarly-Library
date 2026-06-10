@@ -1,0 +1,19 @@
+{
+  "name": "library-management-app",
+  "private": true,
+  "description": "Open the Vite app in ./frontend — use these scripts from this folder.",
+  "scripts": {
+    "start": "concurrently --names \"backend,frontend\" --prefix-colors \"cyan,green\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"cyan,green\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
