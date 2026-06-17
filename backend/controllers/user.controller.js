@@ -40,7 +40,8 @@ async function create(req, res, next) {
     if (assignedRole === 'superadmin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ message: 'Only a superadmin can assign the superadmin role' })
     }
-    const user = await User.create({ name, email, password, role: assignedRole })
+    // Admin-created accounts are pre-verified — no email flow needed
+    const user = await User.create({ name, email, password, role: assignedRole, isEmailVerified: true })
     res.status(201).json(user)
   } catch (err) {
     next(err)
@@ -51,9 +52,16 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const { name, picture, role } = req.body
+    const updateData = { name, picture }
+    if (role) {
+      if (role === 'superadmin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ message: 'Only a superadmin can assign the superadmin role' })
+      }
+      updateData.role = role
+    }
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { name, picture, role },
+      updateData,
       { new: true, runValidators: true }
     ).select('-password')
     if (!user) return res.status(404).json({ message: 'User not found' })

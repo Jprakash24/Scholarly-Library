@@ -20,4 +20,7 @@ const borrowRequestSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
+borrowRequestSchema.index({ user: 1, status: 1 })
+borrowRequestSchema.index({ material: 1, status: 1 })
+
 module.exports = mongoose.model('BorrowRequest', borrowRequestSchema)

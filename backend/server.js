@@ -58,7 +58,7 @@ async function start() {
     console.warn('WARNING: CLIENT_URL not set — CORS allows localhost only')
   }
 
-  // Connect to DB first, then open the port
+  // Connect to DB first, then open the port so no request hits a route before DB is ready
   await connectDB()
 
   const PORT = process.env.PORT || 5000

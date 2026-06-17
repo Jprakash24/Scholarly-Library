@@ -7,7 +7,8 @@ async function getAll(req, res, next) {
     if (kind && kind !== 'all') filter.kind = kind
     if (q) filter.$text = { $search: q }
     if (ids) {
-      const idList = ids.split(',').filter(Boolean)
+      const { isValidObjectId } = require('mongoose')
+      const idList = ids.split(',').filter(id => isValidObjectId(id.trim()))
       filter._id = { $in: idList }
     }
 

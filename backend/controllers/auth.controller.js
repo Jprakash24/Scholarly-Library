@@ -151,6 +151,7 @@ async function signup(req, res, next) {
     await user.save({ validateBeforeSave: false })
 
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${rawToken}`
+    if (!process.env.FRONTEND_URL) console.warn('WARNING: FRONTEND_URL not set — verify link points to localhost')
     const result = await sendEmail({
       to:      user.email,
       subject: 'Scholarly Library — Verify your email address',
@@ -330,6 +331,7 @@ async function resendVerify(req, res, next) {
     await user.save({ validateBeforeSave: false })
 
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${rawToken}`
+    if (!process.env.FRONTEND_URL) console.warn('WARNING: FRONTEND_URL not set — verify link points to localhost')
     const result = await sendEmail({
       to:      user.email,
       subject: 'Scholarly Library — Verify your email address',

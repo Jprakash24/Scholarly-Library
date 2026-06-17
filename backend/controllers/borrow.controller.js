@@ -112,22 +112,21 @@ async function returnMaterial(req, res, next) {
 // PATCH /api/borrow/:id/renew  — user renews a borrowed material
 async function renewMaterial(req, res, next) {
   try {
-    const request = await BorrowRequest.findOne({
-      _id: req.params.id,
-      user: req.user._id,
-      status: 'approved',
-    }).populate('material')
-
-    if (!request) return res.status(404).json({ message: 'Borrow record not found' })
-    if (request.renewCount >= 2) {
-      return res.status(400).json({ message: 'Maximum renewals reached' })
-    }
-
     const dueDate = new Date()
     dueDate.setDate(dueDate.getDate() + 14)
-    request.dueDate = dueDate
-    request.renewCount += 1
-    await request.save()
+
+    // Atomic: only succeeds if renewCount < 2, preventing race conditions
+    const request = await BorrowRequest.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id, status: 'approved', renewCount: { $lt: 2 } },
+      { $inc: { renewCount: 1 }, dueDate },
+      { new: true }
+    ).populate('material')
+
+    if (!request) {
+      const exists = await BorrowRequest.findOne({ _id: req.params.id, user: req.user._id })
+      if (!exists) return res.status(404).json({ message: 'Borrow record not found' })
+      return res.status(400).json({ message: 'Maximum renewals reached' })
+    }
 
     await Activity.create({
       user: req.user._id,

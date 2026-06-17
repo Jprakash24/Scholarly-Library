@@ -22,7 +22,7 @@ async function toggle(req, res, next) {
 async function getMine(req, res, next) {
   try {
     const items = await SavedItem.find({ user: req.user._id }).select('material').lean()
-    res.json({ savedIds: items.map((i) => i.material.toString()) })
+    res.json({ savedIds: items.filter(i => i.material).map((i) => i.material.toString()) })
   } catch (err) {
     next(err)
   }

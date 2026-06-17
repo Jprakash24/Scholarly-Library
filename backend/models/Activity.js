@@ -19,4 +19,7 @@ const activitySchema = new mongoose.Schema(
   { timestamps: true }
 )
 
+activitySchema.index({ user: 1, createdAt: -1 })
+activitySchema.index({ dismissed: 1 })
+
 module.exports = mongoose.model('Activity', activitySchema)

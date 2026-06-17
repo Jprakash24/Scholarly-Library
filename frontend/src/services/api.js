@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const BASE = import.meta.env.VITE_API_URL || 'https://scholarly-library-zgjw.onrender.com/api'
 
 const SESSION_KEY = 'scholarly-library-session'
 
