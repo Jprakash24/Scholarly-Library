@@ -62,7 +62,18 @@ async function start() {
   await connectDB()
 
   const PORT = process.env.PORT || 5000
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+
+    // Keep Render free tier alive — ping self every 14 minutes to prevent spin-down
+    if (process.env.SERVER_URL) {
+      setInterval(() => {
+        fetch(`${process.env.SERVER_URL}/api/health`)
+          .then(() => console.log('Keep-alive ping sent'))
+          .catch(() => {})
+      }, 14 * 60 * 1000)
+    }
+  })
 }
 
 start().catch(err => {
