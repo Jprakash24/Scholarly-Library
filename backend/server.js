@@ -1,8 +1,9 @@
 require('dotenv').config()
-const express = require('express')
-const cors    = require('cors')
-const path    = require('path')
-const connectDB = require('./config/db')
+const express     = require('express')
+const cors        = require('cors')
+const compression = require('compression')
+const path        = require('path')
+const connectDB   = require('./config/db')
 
 const authRoutes     = require('./routes/auth.routes')
 const materialRoutes = require('./routes/material.routes')
@@ -23,6 +24,7 @@ app.use(cors({
   origin: (origin, cb) => (!origin || allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'))),
   credentials: true,
 }))
+app.use(compression())
 app.use(express.json({ limit: '5mb' }))
 
 // Serve uploaded files
