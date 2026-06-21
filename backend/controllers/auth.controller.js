@@ -60,7 +60,7 @@ function signupOtpEmailHtml(code) {
 async function sendEmail({ to, subject, text, html }) {
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.log(`[EMAIL] No SMTP configured — skipped for ${to}`)
-    return
+    return { sent: false, reason: 'no_smtp' }
   }
   try {
     const transporter = nodemailer.createTransport({
@@ -75,8 +75,10 @@ async function sendEmail({ to, subject, text, html }) {
     })
     await transporter.sendMail({ from: `"Scholarly Library" <${process.env.SMTP_USER}>`, to, subject, text, html })
     console.log(`[EMAIL] Sent to ${to} — "${subject}"`)
+    return { sent: true }
   } catch (err) {
     console.error(`[EMAIL] Failed to ${to} — ${err.message}`)
+    return { sent: false, reason: err.message }
   }
 }
 
@@ -109,13 +111,18 @@ async function signup(req, res, next) {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
     await user.save()
 
-    res.status(201).json({ message: 'Verification code sent to your email.' })
-    setImmediate(() => sendEmail({
+    const { sent, reason } = await sendEmail({
       to:      normalizedEmail,
       subject: 'Scholarly Library — Your verification code',
       text:    `Your signup verification code is: ${code}\n\nThis code expires in 10 minutes.\nIf you did not create an account, ignore this email.`,
       html:    signupOtpEmailHtml(code),
-    }))
+    })
+
+    if (!sent && reason !== 'no_smtp') {
+      return res.status(500).json({ message: 'Could not send verification email. Please try again.' })
+    }
+
+    res.status(201).json({ message: 'Verification code sent to your email.' })
   } catch (err) {
     next(err)
   }
@@ -174,13 +181,18 @@ async function resendSignupOtp(req, res, next) {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
     await user.save({ validateBeforeSave: false })
 
-    res.json({ message: 'New verification code sent.' })
-    setImmediate(() => sendEmail({
+    const { sent, reason } = await sendEmail({
       to:      user.email,
       subject: 'Scholarly Library — Your verification code',
       text:    `Your signup verification code is: ${code}\n\nThis code expires in 10 minutes.`,
       html:    signupOtpEmailHtml(code),
-    }))
+    })
+
+    if (!sent && reason !== 'no_smtp') {
+      return res.status(500).json({ message: 'Could not send verification email. Please try again.' })
+    }
+
+    res.json({ message: 'New verification code sent.' })
   } catch (err) {
     next(err)
   }
