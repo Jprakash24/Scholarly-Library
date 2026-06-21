@@ -119,7 +119,7 @@ async function signup(req, res, next) {
     })
 
     if (!sent && reason !== 'no_smtp') {
-      return res.status(500).json({ message: 'Could not send verification email. Please try again.' })
+      return res.status(500).json({ message: `Email failed: ${reason}` })
     }
 
     res.status(201).json({ message: 'Verification code sent to your email.' })
