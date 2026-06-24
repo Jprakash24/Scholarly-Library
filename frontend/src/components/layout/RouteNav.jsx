@@ -19,16 +19,16 @@ const linkClass = (isActive) =>
 
 const PATRON_ITEMS = [
   { to: P.userDashboard, label: 'Home',    end: true },
-  { to: P.userCatalog,   label: 'Collection',  end: true },
+  { to: P.userCatalog,   label: 'Study Items',  end: true },
   { to: P.userActivity,  label: 'History', end: true },
   { to: P.userProfile,   label: 'Account', end: true },
 ]
 
 const LIBRARIAN_ITEMS = [
   { to: P.adminAnalytics,    label: 'Analytics',   end: true },
-  { to: P.adminBorrows,      label: 'Item Request',     end: true },
+  { to: P.adminBorrows,      label: 'Request',     end: true },
   { to: P.adminUsers,        label: 'Users',     end: true },
-  { to: P.adminMaterials,    label: 'Items List', end: true },
+  { to: P.adminMaterials,    label: 'Items Details', end: true },
   { to: P.adminMaterialsAdd, label: 'Add Items',   end: true },
 ]
 
