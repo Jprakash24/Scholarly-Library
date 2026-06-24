@@ -187,6 +187,7 @@ async function updateProfile(req, res, next) {
 async function sendOtp(req, res, next) {
   try {
     const user = await User.findById(req.user._id)
+    if (!user) return res.status(404).json({ message: 'User not found.' })
 
     if (user.otpExpiry && user.otpExpiry > new Date(Date.now() + 9 * 60 * 1000)) {
       return res.status(429).json({ message: 'Please wait 60 seconds before requesting a new code.' })
@@ -199,7 +200,18 @@ async function sendOtp(req, res, next) {
     user.otpExpiry = expiry
     await user.save({ validateBeforeSave: false })
 
-    res.json({ message: 'Verification code generated.', otp: code })
+    const { sent, reason } = await sendEmail({
+      to:      user.email,
+      subject: 'Scholarly Library — Your password change code',
+      text:    `Your verification code is: ${code}\n\nThis code expires in 10 minutes.`,
+      html:    signupOtpHtml(code),
+    })
+
+    if (!sent && reason !== 'no_smtp') {
+      return res.status(500).json({ message: 'Could not send verification email. Please try again.' })
+    }
+
+    res.json({ message: 'Verification code sent to your email.' })
   } catch (err) {
     next(err)
   }
