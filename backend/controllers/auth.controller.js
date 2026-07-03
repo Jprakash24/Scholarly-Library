@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator')
 const User   = require('../models/User')
 const { sendEmail }      = require('../email/sender')
 const { signupOtpHtml }  = require('../email/templates/signupOtp')
+const { passwordChangedHtml } = require('../email/templates/changePass')
 
 /* ── helpers ──────────────────────────────────────────── */
 
@@ -245,6 +246,13 @@ async function changePassword(req, res, next) {
     user.otpCode   = null
     user.otpExpiry = null
     await user.save()
+
+    sendEmail({
+      to:      user.email,
+      subject: 'Scholarly Library — Password Reset Successfully',
+      text:    'Your password has been reset successfully. You can now log in with your new password.',
+      html:    passwordChangedHtml(),
+    }).catch(err => console.error(`[EMAIL] Password-changed notice failed — ${err.message}`))
 
     res.json({ message: 'Password updated successfully.' })
   } catch (err) {

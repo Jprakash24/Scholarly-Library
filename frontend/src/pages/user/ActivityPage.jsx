@@ -50,7 +50,7 @@ export default function ActivityLogPage() {
         </header>
       )}
 
-      <main className="max-w-[860px] mx-auto px-4 sm:px-6 md:px-gutter pb-24 py-8">
+      <main className="max-w-[860px] mx-auto px-4 sm:px-6 md:px-gutter pb-24 py-8 md:mt-[68px]">
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-3 mb-8">
           {[

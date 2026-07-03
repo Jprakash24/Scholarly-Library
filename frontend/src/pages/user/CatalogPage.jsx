@@ -339,6 +339,30 @@ export default function CatalogPage() {
               </p>
             </div>
 
+            <div className="relative group  hidden md:block">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-secondary transition-colors text-[20px] ">
+              search
+            </span>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Escape' && setQuery('')}
+              placeholder="Search by title, author, or category…"
+              className="w-full pl-12 pr-10 py-3 rounded-xl bg-surface-container-lowest dark:bg-surface-container border border-outline-variant focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all text-body-md"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className={`${navBtn} absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-outline hover:text-on-surface hover:bg-surface-container-high active:scale-90`}
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            )}
+          </div>
+
             {/* View-mode toggle */}
             <div className="flex items-center bg-surface-container-high rounded-xl p-0.5 gap-0.5">
               {[
@@ -407,8 +431,9 @@ export default function CatalogPage() {
             </div>
           </div>
 
-          {/* Row 2 — search bar */}
-          <div className="relative group pb-3">
+          {/* Row 2 — search bar  for Responsive view*/}
+          <div className="pb-3 block md:hidden">
+            <div className="relative group ">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-secondary transition-colors text-[20px]">
               search
             </span>
@@ -431,6 +456,8 @@ export default function CatalogPage() {
               </button>
             )}
           </div>
+          </div>
+          
 
           {/* Row 3 — filter chips + clear */}
           <div className="flex items-center gap-2 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
@@ -470,7 +497,7 @@ export default function CatalogPage() {
       {/* ═══════════════════════════════════
           MAIN CONTENT
       ═══════════════════════════════════ */}
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-6 pb-28 md:pb-10">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-6 pb-28 md:pb-10 md:mt-[75px]">
 
         {/* ── Error ───────────────────── */}
         {error && (

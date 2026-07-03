@@ -284,11 +284,11 @@ export default function AdminBorrowsPage() {
                     requests.map((req) => (
                       <tr key={req._id} className="hover:bg-surface-container transition-colors">
                         <td className="px-6 py-4">
-                          <p className="font-body-md font-bold text-on-surface">{req.user?.name ?? 'â€"'}</p>
+                          <p className="font-body-md font-bold text-on-surface">{req.user?.name ?? 'User Not Found'}</p>
                           <p className="font-label-sm text-label-sm text-on-surface-variant">{req.user?.email ?? ''}</p>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="font-body-md text-on-surface">{req.material?.title ?? 'â€"'}</p>
+                          <p className="font-body-md text-on-surface">{req.material?.title ?? 'N/A'}</p>
                           <p className="font-label-sm text-label-sm text-on-surface-variant capitalize">{req.material?.kind ?? ''}</p>
                         </td>
                         <td className="px-6 py-4 font-body-md text-on-surface-variant">{fmt(req.requestedAt ?? req.createdAt)}</td>
@@ -356,7 +356,7 @@ export default function AdminBorrowsPage() {
             {/* Pagination */}
             <div className="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
               <p className="font-label-sm text-label-sm text-on-surface-variant">
-                {total === 0 ? '0 requests' : `Showing ${(page - 1) * LIMIT + 1}â€"${Math.min(page * LIMIT, total)} of ${total}`}
+                {total === 0 ? '0 requests' : `Showing ${(page - 1) * LIMIT + 1} - "${Math.min(page * LIMIT, total)} of ${total}`}
               </p>
               <div className="flex gap-2">
                 <button type="button" className="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container transition-colors disabled:opacity-40" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>

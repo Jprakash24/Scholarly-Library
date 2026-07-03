@@ -219,7 +219,7 @@ export default function ProfilePage() {
       </header>
       )}
 
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 pb-28 space-y-6">
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-8 pb-28 space-y-6 md:mt-[70px]">
 
         {/* ════════════════════════════════════════
             PROFILE HERO
