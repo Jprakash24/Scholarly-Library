@@ -25,7 +25,7 @@ function passwordChangedHtml() {
             <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
               <tr>
                 <td style="border-radius:12px;background:#e9c176;">
-                  <a href="${process.env.FRONTEND_URL}/login" style="display:inline-block;padding:14px 36px;color:#111;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;">Log In</a>
+                  <a href="${process.env.CLIENT_URL}/login" style="display:inline-block;padding:14px 36px;color:#111;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;">Log In</a>
                 </td>
               </tr>
             </table>
