@@ -19,6 +19,8 @@ export default function AdminUsersPage() {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [suspendTarget, setSuspendTarget] = useState(null)
   const [suspendLoading, setSuspendLoading] = useState(false)
+  const [restoreTarget, setRestoreTarget] = useState(null)
+  const [restoreLoading, setRestoreLoading] = useState(false)
   const [resetTarget, setResetTarget]   = useState(null)
   const [resetPwd, setResetPwd]         = useState('')
   const [resetLoading, setResetLoading] = useState(false)
@@ -126,6 +128,29 @@ export default function AdminUsersPage() {
     if (myRole === 'superadmin') return u.role !== 'superadmin'
     if (myRole === 'admin') return u.role === 'user'
     return false
+  }
+
+  const confirmRestore = async () => {
+    if (!restoreTarget) return
+    setRestoreLoading(true)
+    try {
+      await api.patch(`/users/${restoreTarget.id}/restore`, {})
+      setToastMsg(`${restoreTarget.name}'s account has been reactivated.`)
+      setRestoreTarget(null)
+      refetch()
+    } catch (err) {
+      setToastMsg(err.message || 'Failed to reactivate account.')
+      setRestoreTarget(null)
+    } finally {
+      setRestoreLoading(false)
+    }
+  }
+
+  function canRestore(u) {
+    if (!u.isDeactivated) return false
+    if (u.role === 'superadmin') return false
+    if (myRole === 'admin') return u.role === 'user'
+    return myRole === 'superadmin'
   }
 
   function getRoleLabel(role) {
@@ -284,7 +309,12 @@ export default function AdminUsersPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          {u.suspended ? (
+                          {u.isDeactivated ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-on-surface-variant" />
+                              <span className="font-label-sm text-label-sm text-on-surface-variant font-semibold">Deactivated</span>
+                            </div>
+                          ) : u.suspended ? (
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 rounded-full bg-error" />
                               <span className="font-label-sm text-label-sm text-error font-semibold">Suspended</span>
@@ -306,7 +336,17 @@ export default function AdminUsersPage() {
                                 <span className="material-symbols-outlined text-on-surface-variant">lock_reset</span>
                               </button>
                             )}
-                            {canSuspend(u) && (
+                            {canRestore(u) && (
+                              <button
+                                type="button"
+                                className="p-2 rounded-lg hover:bg-secondary-container text-secondary transition-colors"
+                                title="Restore Deactivated Account"
+                                onClick={() => setRestoreTarget({ id: u._id, name: u.name })}
+                              >
+                                <span className="material-symbols-outlined">restart_alt</span>
+                              </button>
+                            )}
+                            {!u.isDeactivated && canSuspend(u) && (
                               <button
                                 type="button"
                                 className={`p-2 rounded-lg transition-colors ${u.suspended ? 'hover:bg-secondary-container text-secondary' : 'hover:bg-error-container text-error'}`}
@@ -378,6 +418,35 @@ export default function AdminUsersPage() {
                 disabled={suspendLoading}
               >
                 {suspendLoading ? '' : suspendTarget.suspended ? 'Reactivate' : 'Suspend'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {restoreTarget && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-surface rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 border border-outline-variant">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-secondary">restart_alt</span>
+              </div>
+              <h3 className="font-title-md text-title-md text-on-surface font-bold">Restore Account</h3>
+            </div>
+            <p className="font-body-md text-body-md text-on-surface-variant mb-6">
+              Restore {restoreTarget.name}&apos;s account? They deactivated it themselves and will be able to log in again once restored.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button type="button" className="px-6 py-2.5 rounded-full font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container-high transition-all" onClick={() => setRestoreTarget(null)} disabled={restoreLoading}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-6 py-2.5 rounded-full font-bold font-label-sm text-label-sm bg-secondary text-on-secondary hover:opacity-90 active:scale-95 transition-all disabled:opacity-60"
+                onClick={confirmRestore}
+                disabled={restoreLoading}
+              >
+                {restoreLoading ? '' : 'Restore'}
               </button>
             </div>
           </div>

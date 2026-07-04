@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const { sendEmail } = require('../email/sender')
+const { accountRestoredHtml } = require('../email/templates/accountRestore')
 
 // GET /api/users  (admin+)
 async function getAll(req, res, next) {
@@ -160,4 +162,38 @@ function setSuspended(suspended) {
   }
 }
 
-module.exports = { getAll, getOne, create, update, remove, resetPassword, suspend: setSuspended(true), reactivate: setSuspended(false) }
+// PATCH /api/users/:id/restore  (admin+ reactivates a self-deactivated account)
+async function restore(req, res, next) {
+  try {
+    const target = await User.findById(req.params.id)
+    if (!target) return res.status(404).json({ message: 'User not found' })
+
+    if (!target.isDeactivated) {
+      return res.status(400).json({ message: 'This account is not deactivated.' })
+    }
+    // Admin can only restore regular users
+    if (req.user.role === 'admin' && target.role !== 'user') {
+      return res.status(403).json({ message: 'Admins can only restore regular users' })
+    }
+    // Superadmin cannot restore another superadmin
+    if (target.role === 'superadmin') {
+      return res.status(403).json({ message: 'Superadmin accounts cannot be restored this way.' })
+    }
+
+    target.isDeactivated = false
+    await target.save()
+
+    sendEmail({
+      to:      target.email,
+      subject: 'Scholarly Library — Your Account Has Been Reactivated',
+      text:    `Hi ${target.name}, your account has been reactivated by the library. You can now log in again.`,
+      html:    accountRestoredHtml(target.name),
+    }).catch(err => console.error(`[EMAIL] Account restore notice failed — ${err.message}`))
+
+    res.json(target)
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { getAll, getOne, create, update, remove, resetPassword, suspend: setSuspended(true), reactivate: setSuspended(false), restore }

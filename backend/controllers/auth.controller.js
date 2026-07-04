@@ -5,6 +5,8 @@ const User   = require('../models/User')
 const { sendEmail }      = require('../email/sender')
 const { signupOtpHtml }  = require('../email/templates/signupOtp')
 const { passwordChangedHtml } = require('../email/templates/changePass')
+const { userDeactivateHtml } = require('../email/templates/accountDeactivate')
+
 
 /* ── helpers ──────────────────────────────────────────── */
 
@@ -272,6 +274,13 @@ async function deactivateAccount(req, res, next) {
 
     user.isDeactivated = true
     await user.save({ validateBeforeSave: false })
+
+    sendEmail({
+      to: user.email,
+      subject: "Scholarly Library — Account Deactivate successfull",
+      text: "Your account has been successfully deactivated. Thank you for being with us. We hope to welcome you back in the future.",
+      html: userDeactivateHtml(),
+    }).catch(err => console.error(`[EMAIL] Account deactivation is Unsuccessful — ${err.message}`))
 
     res.json({ message: 'Account deactivated. You have been logged out.' })
   } catch (err) {
