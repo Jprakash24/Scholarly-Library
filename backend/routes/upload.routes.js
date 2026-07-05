@@ -11,10 +11,8 @@ router.post(
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded or file type not allowed' })
     }
-    const base = process.env.SERVER_URL || 'http://localhost:5000'
-    const fileUrl = `${base}/uploads/${req.file.filename}`
     res.json({
-      fileUrl,
+      fileUrl: req.file.path,
       originalName: req.file.originalname,
       size: req.file.size,
       mimetype: req.file.mimetype,

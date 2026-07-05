@@ -1,5 +1,7 @@
 const multer = require('multer')
 const path = require('path')
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
+const cloudinary = require('../config/cloudinary')
 
 const ALLOWED_EXT = new Set([
   '.pdf', '.doc', '.docx', '.ppt', '.pptx',
@@ -7,13 +9,9 @@ const ALLOWED_EXT = new Set([
   '.jpg', '.jpeg', '.png', '.webp', '.gif',
 ])
 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, '../uploads'),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase()
-    const base = path.basename(file.originalname, ext).replace(/[^a-z0-9]/gi, '_').slice(0, 40)
-    cb(null, `${Date.now()}-${base}${ext}`)
-  },
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {folder: 'library-app' , resource_type:'auto'},
 })
 
 const fileFilter = (req, file, cb) => {
