@@ -381,7 +381,7 @@ export default function MaterialDetailPage() {
               </div>
               <div>
                 <p className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">Category</p>
-                <p className="font-body-md text-on-surface">{material.categoryLabel || 'â€”'}</p>
+                <p className="font-body-md text-on-surface">{material.categoryLabel || '-'}</p>
               </div>
             </div>
           </div>

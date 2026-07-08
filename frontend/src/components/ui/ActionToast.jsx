@@ -15,12 +15,12 @@ export default function ActionToast() {
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-body-md font-bold leading-tight">{toast.title}</p>
-          <p className="font-label-sm text-label-sm opacity-75 mt-1 leading-snug">{toast.message}</p>
+          <p className="font-body-md font-bold leading-tight line-clamp-2 text-inverse-on-surface">{toast.title}</p>
+          <p className="font-label-sm text-label-sm opacity-75 mt-1 leading-snug line-clamp-2 text-inverse-on-surface">{toast.message}</p>
         </div>
         <button
           type="button"
-          className={`${navBtn} p-1 opacity-60 hover:opacity-100 transition-opacity shrink-0 mt-0.5`}
+          className={`${navBtn} -m-2 p-2 opacity-60 hover:opacity-100 transition-opacity shrink-0`}
           onClick={dismissToast}
           aria-label="Dismiss"
         >
